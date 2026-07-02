@@ -1,0 +1,13 @@
+opencv-python
+mediapipe
+numpy
+pandas
+scikit-learn
+matplotlib
+seaborn
+gTTS
+playsound==1.2.2
+pillow
+pygame
+joblib
+customtkinter
