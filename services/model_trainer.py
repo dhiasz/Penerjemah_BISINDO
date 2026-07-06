@@ -123,7 +123,8 @@ class ModelTrainer:
         )
 
         self.save_model()
-
+        
+        print("Model selesai di buat")
         return {
 
             "dataset_path": csv_path,

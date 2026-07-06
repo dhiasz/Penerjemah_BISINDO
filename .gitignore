@@ -1,2 +1,5 @@
-data/dataset/
-data/processed/
+data/dataset/*
+!data/dataset/.gitkeep
+
+data/processed/*
+!data/processed/.gitkeep

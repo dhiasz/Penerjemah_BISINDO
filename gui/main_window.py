@@ -2,10 +2,12 @@ import customtkinter as ctk
 
 from gui.dataset_window import DatasetWindow
 from gui.train_window import TrainWindow
+from gui.translate_window import TranslateWindow
 class MainWindow:
 
     def __init__(self):
 
+        
         # Theme
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
@@ -16,10 +18,7 @@ class MainWindow:
         self.root.geometry("1200x700")
         self.root.resizable(False, False)
 
-        self.dataset_window = None
-        self.train_window = None
-        self.translate_window = None
-        self.text_to_sign_window = None
+        self.active_window = None
 
         self.setup_ui()
 
@@ -201,17 +200,37 @@ class MainWindow:
 
         self.description_label.pack(padx=50)
 
+    def open_window(self, window_class):
+
+            if self.active_window is not None and self.active_window.winfo_exists():
+                self.active_window.focus_force()
+                return
+
+            self.active_window = window_class(self.root)
+
+            def on_close():
+                self.active_window.destroy()
+                self.active_window = None
+
+            self.active_window.protocol(
+                "WM_DELETE_WINDOW",
+                on_close
+            )
+
     # =================================================
     # EVENT BUTTON
     # =================================================
     def open_dataset(self):
-        DatasetWindow(self.root)
+        self.open_window(DatasetWindow)
 
     def open_train(self):
-        TrainWindow(self. root)
+        self.open_window(TrainWindow)
 
     def open_translate(self):
-        print("Terjemahan")
+        self.open_window(TranslateWindow)
+
+    # def open_text_to_sign(self):
+    #     self.open_window(TextToSignWindow)
 
     def open_text_to_sign(self):
         print("Bahasa Isyarat")

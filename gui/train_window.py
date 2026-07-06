@@ -27,28 +27,12 @@ class TrainWindow(ctk.CTkToplevel):
         self.load_dataset_information()
 
         # Training otomatis saat window dibuka
-        self.after(500, self.start_training)
+        self.after(
+            500,
+            lambda: print("after dipanggil") or self.start_training()
+        )
 
-    def open_train(self):
-
-        if self.train_window is None or not self.train_window.winfo_exists():
-
-            self.train_window = TrainWindow(self.root)
-
-        else:
-
-            self.train_window.focus()
-
-    def start_training(self):
-
-            self.train_button.configure(state="disabled")
-
-            thread = threading.Thread(
-                target=self.training_process,
-                daemon=True
-            )
-
-            thread.start()
+    
 
     # ==========================================================
     # GUI
@@ -178,8 +162,25 @@ class TrainWindow(ctk.CTkToplevel):
 
     def start_training(self):
 
+        
+        self.accuracy_label.configure(
+            text="--%"
+        )
+
+        self.status_label.configure(
+            text="Status : Memulai Training...",
+            text_color="white"
+        )
+
+        self.progress.set(0)
+
+        self.train_button.configure(
+            state="disabled"
+        )
+
         thread = threading.Thread(
-            target=self.training_process
+            target=self.training_process,
+            daemon=True
         )
 
         thread.start()
@@ -192,34 +193,73 @@ class TrainWindow(ctk.CTkToplevel):
 
         try:
 
-            self.progress.set(0.1)
-
-            self.status_label.configure(
-                text="Ekstraksi Feature..."
+            self.after(
+                0,
+                lambda: (
+                    self.status_label.configure(
+                        text="Status : Membaca Dataset..."
+                    ),
+                    self.progress.set(0.1)
+                )
             )
 
             csv_path = self.extractor.extract_dataset()
 
-            self.progress.set(0.5)
+            self.after(
+                0,
+                lambda: (
+                    self.status_label.configure(
+                        text="Status : Ekstraksi Landmark..."
+                    ),
+                    self.progress.set(0.3)
+                )
+            )
 
-            self.status_label.configure(
-                text="Training Model..."
+            self.after(
+                0,
+                lambda: (
+                    self.status_label.configure(
+                        text="Status : Melatih Model..."
+                    ),
+                    self.progress.set(0.6)
+                )
             )
 
             result = self.trainer.train(csv_path)
 
-            self.progress.set(1)
-
-            self.status_label.configure(
-                text=result["status"],
-                text_color="white"
+            self.after(
+                0,
+                lambda: (
+                    self.status_label.configure(
+                        text="Status : Menyimpan Model..."
+                    ),
+                    self.progress.set(0.9)
+                )
             )
 
-            self.accuracy_label.configure(
-                text=f'{result["accuracy"]}%'
+            self.after(
+                0,
+                lambda: (
+                    self.status_label.configure(
+                        text="Status : Training Berhasil",
+                        text_color="#FFFFFF"
+                    ),
+                    self.accuracy_label.configure(
+                        text=f'{result["accuracy"]}%'
+                    ),
+                    self.progress.set(1)
+                )
             )
 
         except FileNotFoundError:
+
+            self.after(
+                0,
+                lambda: self.status_label.configure(
+                    text="Status : Dataset Tidak Ditemukan",
+                    text_color="red"
+                )
+            )
 
             messagebox.showerror(
                 "Error",
@@ -228,6 +268,14 @@ class TrainWindow(ctk.CTkToplevel):
 
         except ValueError as e:
 
+            self.after(
+                0,
+                lambda: self.status_label.configure(
+                    text="Status : Training Gagal",
+                    text_color="red"
+                )
+            )
+
             messagebox.showerror(
                 "Error",
                 str(e)
@@ -235,7 +283,24 @@ class TrainWindow(ctk.CTkToplevel):
 
         except Exception as e:
 
+            self.after(
+                0,
+                lambda: self.status_label.configure(
+                    text="Status : Terjadi Kesalahan",
+                    text_color="red"
+                )
+            )
+
             messagebox.showerror(
                 "Error",
                 str(e)
+            )
+
+        finally:
+
+            self.after(
+                0,
+                lambda: self.train_button.configure(
+                    state="normal"
+                )
             )
