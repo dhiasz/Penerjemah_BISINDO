@@ -6,6 +6,7 @@ import numpy as np
 from config import MODEL_PATH, CONFIDENCE_THRESHOLD
 from services.hand_detector import HandDetector
 from services.feature_extractor import FeatureExtractor
+from services.camera_manager import CameraManager
 
 
 class Predictor:
@@ -16,7 +17,13 @@ class Predictor:
 
         self.extractor = FeatureExtractor()
 
-        self.cap = cv2.VideoCapture(0)
+        self.camera = CameraManager()
+
+        if not self.camera.open():
+
+            raise RuntimeError(
+                "Kamera tidak dapat dibuka."
+            )
 
         self.model = self.load_model()
 
@@ -33,24 +40,17 @@ class Predictor:
 
         return joblib.load(MODEL_PATH)
 
-    # ==========================================
-    # GET FRAME
-    # ==========================================
+    # Membaca kamera
     def get_frame(self):
 
-        success, frame = self.cap.read()
+        return self.camera.get_frame()
 
-        if not success:
+    # Ganti kamera
+    def change_camera(self, index):
 
-            return None
+        self.camera.change_camera(index)
 
-        frame = cv2.flip(frame, 1)
-
-        return frame
-
-    # ==========================================
-    # PREDICT
-    # ==========================================
+    # Memprediksi 
     def predict(self):
 
         frame = self.get_frame()
@@ -87,11 +87,7 @@ class Predictor:
 
         return frame, prediction, confidence_percent
 
-    # ==========================================
-    # RELEASE CAMERA
-    # ==========================================
+ 
     def release(self):
 
-        if self.cap.isOpened():
-
-            self.cap.release()
+        self.camera.release()
