@@ -40,3 +40,7 @@ CONFIDENCE_THRESHOLD = 0.90
 
 # KBBI
 DICTIONARY_PATH = "data/kbbi_v6.1.0_full.csv"
+
+# GESTURE IMAGE
+GESTURE_WORD_PATH = "assets/gestures/words"
+GESTURE_ALPHABET_PATH = "assets/gestures/alphabet"

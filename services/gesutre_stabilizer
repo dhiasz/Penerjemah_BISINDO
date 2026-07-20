@@ -1,0 +1,52 @@
+class GestureStabilizer:
+
+    def __init__(self):
+
+        # Gesture terakhir yang sudah diterima
+        self.last_prediction = None
+
+        # Jumlah frame tanpa deteksi
+        self.no_detection_count = 0
+
+        # Berapa frame tanpa deteksi sebelum reset
+        self.reset_frames = 5
+
+    # ==========================================
+    # STABILIZER
+    # ==========================================
+    def process(self, prediction):
+
+        # -----------------------------
+        # Tidak ada gesture
+        # -----------------------------
+        if prediction is None:
+
+            self.no_detection_count += 1
+
+            if self.no_detection_count >= self.reset_frames:
+
+                self.last_prediction = None
+                self.no_detection_count = 0
+
+            return None
+
+        # Ada gesture → reset counter
+        self.no_detection_count = 0
+
+        # Gesture sama dengan sebelumnya
+        if prediction == self.last_prediction:
+
+            return None
+
+        # Gesture baru
+        self.last_prediction = prediction
+
+        return prediction
+
+    # ==========================================
+    # RESET
+    # ==========================================
+    def reset(self):
+
+        self.last_prediction = None
+        self.no_detection_count = 0

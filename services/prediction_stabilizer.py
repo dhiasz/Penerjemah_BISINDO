@@ -1,47 +1,59 @@
-from collections import Counter
-
-
 class PredictionStabilizer:
 
-    def __init__(self, window_size=5):
+    def __init__(self, required_frames=3):
 
-        self.window_size = window_size
+        self.required_frames = required_frames
 
-        self.predictions = []
+        self.current_prediction = None
+        self.prediction_count = 0
 
-        self.last_output = None
+        self.accepted_prediction = None
+
+    # ==========================================
+    # UPDATE
+    # ==========================================
 
     def update(self, prediction):
 
+        # Tidak ada gesture
         if prediction is None:
+
+            self.current_prediction = None
+            self.prediction_count = 0
+            self.accepted_prediction = None
+
             return None
 
-        self.predictions.append(prediction)
+        # Gesture berubah
+        if prediction != self.current_prediction:
 
-        if len(self.predictions) > self.window_size:
-            self.predictions.pop(0)
+            self.current_prediction = prediction
+            self.prediction_count = 1
 
-        # Belum cukup data
-        if len(self.predictions) < self.window_size:
             return None
 
-        counter = Counter(self.predictions)
+        # Gesture sama
+        self.prediction_count += 1
 
-        stable_prediction = counter.most_common(1)[0][0]
-
-        # Hindari output huruf yang sama terus-menerus
-        if stable_prediction == self.last_output:
+        # Belum stabil
+        if self.prediction_count < self.required_frames:
             return None
 
-        self.last_output = stable_prediction
+        # Sudah pernah diterima
+        if prediction == self.accepted_prediction:
+            return None
 
-        self.predictions.clear()
+        # Gesture stabil
+        self.accepted_prediction = prediction
 
-        return stable_prediction
+        return prediction
 
+    # ==========================================
+    # RESET
+    # ==========================================
 
     def reset(self):
 
-        self.predictions.clear()
-
-        self.last_output = None
+        self.current_prediction = None
+        self.prediction_count = 0
+        self.accepted_prediction = None

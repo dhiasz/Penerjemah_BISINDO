@@ -1,7 +1,6 @@
 import os
 import csv
 import cv2
-import math
 
 from config import DATASET_PATH, PROCESSED_DATASET_PATH
 from services.hand_detector import HandDetector

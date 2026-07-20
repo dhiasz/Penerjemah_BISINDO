@@ -6,7 +6,7 @@ import numpy as np
 from config import MODEL_PATH, CONFIDENCE_THRESHOLD
 from services.hand_detector import HandDetector
 from services.feature_extractor import FeatureExtractor
-from services.camera_manager import CameraManager
+
 
 
 class Predictor:
@@ -16,14 +16,6 @@ class Predictor:
         self.detector = HandDetector()
 
         self.extractor = FeatureExtractor()
-
-        self.camera = CameraManager()
-
-        if not self.camera.open():
-
-            raise RuntimeError(
-                "Kamera tidak dapat dibuka."
-            )
 
         self.model = self.load_model()
 
@@ -40,23 +32,10 @@ class Predictor:
 
         return joblib.load(MODEL_PATH)
 
-    # Membaca kamera
-    def get_frame(self):
-
-        return self.camera.get_frame()
-
-    # Ganti kamera
-    def change_camera(self, index):
-
-        self.camera.change_camera(index)
-
     # Memprediksi 
-    def predict(self):
-
-        frame = self.get_frame()
+    def predict(self, frame):
 
         if frame is None:
-
             return None, None, 0
 
         results = self.detector.detect(frame)
@@ -87,7 +66,3 @@ class Predictor:
 
         return frame, prediction, confidence_percent
 
- 
-    def release(self):
-
-        self.camera.release()

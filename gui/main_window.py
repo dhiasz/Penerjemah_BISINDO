@@ -3,6 +3,7 @@ import customtkinter as ctk
 from gui.dataset_window import DatasetWindow
 from gui.train_window import TrainWindow
 from gui.translate_window import TranslateWindow
+from gui.input_isyara_windowt import InputIsyaratWindow
 class MainWindow:
 
     def __init__(self):
@@ -229,11 +230,8 @@ class MainWindow:
     def open_translate(self):
         self.open_window(TranslateWindow)
 
-    # def open_text_to_sign(self):
-    #     self.open_window(TextToSignWindow)
-
     def open_text_to_sign(self):
-        print("Bahasa Isyarat")
+        self.open_window(InputIsyaratWindow)
 
     # =================================================
     # RUN

@@ -1,88 +1,43 @@
-import pandas as pd
-
-from config import DICTIONARY_PATH
-
-
 class SentenceBuilder:
 
     def __init__(self):
+        self.words = []
 
-        self.dictionary = self.load_dictionary()
+    # =====================================
+    # TAMBAH KATA
+    # =====================================
+    def add_word(self, word):
 
-        self.current_word = ""
+        if not word:
+            return self.get_sentence()
 
-        self.current_sentence = ""
+        self.words.append(word)
 
-    # meload kbbi
-    def load_dictionary(self):
+        return self.get_sentence()
 
-        data = pd.read_csv(DICTIONARY_PATH)
+    # =====================================
+    # AMBIL KALIMAT
+    # =====================================
+    def get_sentence(self):
 
-        words = set()
+        return " ".join(self.words)
 
-        for word in data["kata"]:
+    # =====================================
+    # HAPUS KATA TERAKHIR
+    # =====================================
+    def remove_last_word(self):
 
-            if pd.isna(word):
-                continue
+        if self.words:
 
-            word = str(word).strip().upper()
+            self.words.pop()
 
-            if word:
+        return self.get_sentence()
 
-                words.add(word)
+    # =====================================
+    # RESET
+    # =====================================
+    def clear(self):
 
-        print(f"Kamus dimuat : {len(words)} kata")
+        self.words.clear()
 
-        return words
-
-    
-    # menambah kata
-
-    def add_letter(self, letter):
-
-        if letter is None:
-            return
-
-        self.current_word += letter.upper()
-
-
-    def validate_word(self):
-
-        word = self.current_word.strip()
-
-        if word in self.dictionary:
-
-            if self.current_sentence == "":
-
-                self.current_sentence = word
-
-            else:
-
-                self.current_sentence += " " + word
-
-            self.current_word = ""
-
-            return True
-
-        return False
-
-
-    def backspace(self):
-
-        self.current_word = self.current_word[:-1]
-
-
-    def reset(self):
-
-        self.current_word = ""
-
-        self.current_sentence = ""
-
-
-    def get_current_word(self):
-
-        return self.current_word
-
-    def get_current_sentence(self):
-
-        return self.current_sentence
+        return ""
