@@ -1,6 +1,5 @@
-from services.speech import Speech
+from config import GESTURE_HOLD_TIME
 
-speech = Speech()
-
-speech.speak("Halo, selamat datang")
-
+self.stabilizer = GestureStabilizer(
+    hold_time=GESTURE_HOLD_TIME
+)

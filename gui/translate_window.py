@@ -10,7 +10,9 @@ from services.kbbi_corrector import KBBICorrector
 from services.sentence_builder import SentenceBuilder
 from services.speech import Speech
 
-from services.prediction_stabilizer import PredictionStabilizer
+# from services.prediction_stabilizer import PredictionStabilizer
+from services.gesture_stabilizer import GestureStabilizer
+from config import GESTURE_HOLD_TIME
 
 class TranslateWindow(ctk.CTkToplevel):
 
@@ -22,13 +24,6 @@ class TranslateWindow(ctk.CTkToplevel):
 
         # ======== PREDICTOR ==========
         self.predictor = Predictor()
-
-        # ======== STATE HURUF ==========
-        self.last_prediction = None
-
-        # ======== STATE DETEKSI ==========
-        self.no_detection_frames = 0
-        self.max_no_detection_frames = 5
 
         # ======== TRANSLATOR ==========
         self.translator = Translator()
@@ -42,8 +37,11 @@ class TranslateWindow(ctk.CTkToplevel):
         # ======== SPEECH ========
         self.speech = Speech()
 
-        # ======== PREDICT STABILIZIER ========
-        self.stabilizer = PredictionStabilizer(required_frames=3)
+        # ======== PREDICT STABILIZER ========
+        # self.stabilizer = PredictionStabilizer(required_frames=3)
+
+        # ======== GESTURE STABILIZER ========
+        self.stabilizer = GestureStabilizer()
 
         self.setup_window()
         self.setup_ui()
@@ -240,52 +238,34 @@ class TranslateWindow(ctk.CTkToplevel):
     def update_camera(self):
 
         frame = self.camera.get_frame()
-
         if frame is None:
             self.after_id = self.after(
                 10,
                 self.update_camera
             )
             return
-    
+
         display_frame, prediction, confidence = self.predictor.predict(frame)
-
-        # Bagian ini
-        stable_prediction = self.stabilizer.update(prediction)
-        if stable_prediction is None:
-
-            self.set_current_letter("")
-
-        else:
-
-            if not self.process_special_gesture(stable_prediction):
-
-                self.set_current_letter(stable_prediction)
-
-                self.process_prediction(stable_prediction)
-        # Sampai sini
-        
+        prediction = self.stabilizer.process(prediction)
         if prediction is None:
             self.set_current_letter("")
-            self.process_prediction(None)
-
         else:
+            self.set_current_letter(prediction)
             if not self.process_special_gesture(prediction):
-                self.set_current_letter(prediction)
                 self.process_prediction(prediction)
 
         # Frame untuk ditampilkan di GUI
         image = Image.fromarray(display_frame)
 
-        image = image.resize((500,260))
+        image = image.resize((500, 260))
         photo = ImageTk.PhotoImage(image)
 
         self.camera_label.configure(
             image=photo,
             text=""
         )
+
         self.camera_label.image = photo
-        
         self.after_id = self.after(
             10,
             self.update_camera
@@ -346,33 +326,9 @@ class TranslateWindow(ctk.CTkToplevel):
         if prediction is None:
             return
 
-        current_word = self.translator.add_letter(
-            prediction
-        )
+        current_word = self.translator.add_letter(prediction)
 
-        self.set_temp_result(
-            current_word
-        )
-
-        # ==========================
-        # RESET COUNTER
-        # ==========================
-        self.no_detection_frames = 0
-
-        # Gesture sama
-        if prediction == self.last_prediction:
-            return
-
-        # Gesture baru
-        current_word = self.translator.add_letter(
-            prediction
-        )
-
-        self.last_prediction = prediction
-
-        self.set_temp_result(
-            current_word
-        )
+        self.set_temp_result(current_word)
 
     # =====================================
     # SET HASIL KALIMAT
@@ -403,8 +359,6 @@ class TranslateWindow(ctk.CTkToplevel):
 
     def process_special_gesture(self, prediction):
         if prediction == "BACKSPACE":
-            # Reset state huruf
-            self.last_prediction = None
             # Hapus huruf terakhir
             current_word = self.translator.remove_letter()
 
@@ -416,7 +370,7 @@ class TranslateWindow(ctk.CTkToplevel):
 
         if prediction == "SPACE":
             # Reset state huruf
-            self.last_prediction = None
+            
             # Selesaikan kata
             word = self.translator.finish_word()
 
@@ -450,7 +404,6 @@ class TranslateWindow(ctk.CTkToplevel):
     # =====================================
     # CLOSE
     # =====================================
-
     def on_close(self):
         if self.after_id is not None:
             self.after_cancel(self.after_id)
