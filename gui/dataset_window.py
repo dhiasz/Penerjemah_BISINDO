@@ -29,12 +29,33 @@ class DatasetWindow(ctk.CTkToplevel):
         # Mulai preview kamera
         self.update_camera()
 
+        self.protocol(
+            "WM_DELETE_WINDOW",
+            self.on_close
+        )
+
         # ===============================
         # EVENT
         # ===============================
         self.protocol(
             "WM_DELETE_WINDOW",
             self.on_close
+        )
+
+        # ==================================
+        # COUNTDOWN
+        # ==================================
+        self.countdown_label = ctk.CTkLabel(
+            self.camera_frame,
+            text="",
+            font=("Arial", 48, "bold"),
+            text_color="red"
+        )
+
+        self.countdown_label.place(
+            relx=0.5,
+            rely=0.5,
+            anchor="center"
         )
 
     # ==================================
@@ -106,7 +127,7 @@ class DatasetWindow(ctk.CTkToplevel):
 
         self.label_info = ctk.CTkLabel(
             self.form_frame,
-            text="* Contoh: A, B, HALO",
+            text="* Contoh: A, B",
             font=("Arial", 12),
             text_color="red"
         )
@@ -207,7 +228,7 @@ class DatasetWindow(ctk.CTkToplevel):
         # ==================================
         self.camera_frame = ctk.CTkFrame(
             self,
-            width=1080,
+            width=750,
             height=400,
             fg_color="#E8E8E8",
             corner_radius=8
@@ -321,6 +342,12 @@ class DatasetWindow(ctk.CTkToplevel):
             0,
             lambda: self.capture_finished(result)
         )
+    
+    def set_countdown(self, text):
+
+        self.countdown_label.configure(
+            text=text
+        )
 
     def capture_finished(self, result):
 
@@ -361,10 +388,8 @@ class DatasetWindow(ctk.CTkToplevel):
 
             self.camera_label.image = photo
 
-        self.camera_job = self.after(
-            30,
-            self.update_camera
-        )
+        self.camera_job = self.after(30, self.update_camera)
+
 
     # ==================================
     # CLOSE

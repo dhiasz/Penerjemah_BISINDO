@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import cv2
 
 from PIL import Image, ImageTk
 from services.camera_manager import CameraManager
@@ -12,7 +13,7 @@ from services.speech import Speech
 
 # from services.prediction_stabilizer import PredictionStabilizer
 from services.gesture_stabilizer import GestureStabilizer
-from config import GESTURE_HOLD_TIME
+
 
 class TranslateWindow(ctk.CTkToplevel):
 
@@ -255,8 +256,13 @@ class TranslateWindow(ctk.CTkToplevel):
                 self.process_prediction(prediction)
 
         # Frame untuk ditampilkan di GUI
-        image = Image.fromarray(display_frame)
+        
+        display_frame = cv2.cvtColor(
+            display_frame,
+            cv2.COLOR_BGR2RGB
+        )
 
+        image = Image.fromarray(display_frame)
         image = image.resize((500, 260))
         photo = ImageTk.PhotoImage(image)
 

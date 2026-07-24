@@ -41,9 +41,9 @@ class InputIsyaratWindow(ctk.CTkToplevel):
 
         self.title("Menampilkan Bahasa Isyarat")
 
-        self.geometry("500x520")
+        self.geometry("1280x720")
 
-        self.resizable(False, False)
+        # self.resizable(False, False)
 
         self.grab_set()
 
@@ -149,9 +149,9 @@ class InputIsyaratWindow(ctk.CTkToplevel):
         # -----------------------------
         self.output_frame = ctk.CTkFrame(
             self,
-            width=450,
-            height=260,
-            fg_color="#F0A000",
+            width=750,
+            height=500,
+            fg_color="#FFFFFF",
             corner_radius=0
         )
 
@@ -225,7 +225,7 @@ class InputIsyaratWindow(ctk.CTkToplevel):
         gesture = self.gesture_list[self.current_index]
         with Image.open(gesture["image"]) as image:
 
-            image = image.resize((300, 220))
+            image = image.resize((750, 500))
             photo = ImageTk.PhotoImage(image)
 
         self.image_label.configure(

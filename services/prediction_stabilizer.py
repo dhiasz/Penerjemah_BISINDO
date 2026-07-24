@@ -9,10 +9,6 @@ class PredictionStabilizer:
 
         self.accepted_prediction = None
 
-    # ==========================================
-    # UPDATE
-    # ==========================================
-
     def update(self, prediction):
 
         # Tidak ada gesture
@@ -48,9 +44,6 @@ class PredictionStabilizer:
 
         return prediction
 
-    # ==========================================
-    # RESET
-    # ==========================================
 
     def reset(self):
 

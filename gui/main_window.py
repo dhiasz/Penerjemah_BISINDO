@@ -181,7 +181,7 @@ class MainWindow:
         # Deskripsi
         description = (
             "Aplikasi penerjemah bahasa isyarat BISINDO berbasis\n"
-            "Computer Vision dan Machine Learning.\n\n"
+            "Computer Vision dan Machine Learning Dengan Metode Gradient Boosting.\n\n"
             "Antarmuka ini dirancang untuk menyediakan:\n\n"
             "• Penambahan dataset\n"
             "• Pelatihan model\n"

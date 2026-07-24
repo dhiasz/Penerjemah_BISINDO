@@ -67,6 +67,33 @@ class FeatureExtractor:
 
         return landmarks
 
+    # DISTANCE FEATURES
+    # ==================================================
+    def add_distance_features(self, landmarks):
+
+        features = landmarks.copy()
+
+        def distance(i, j):
+
+            x1 = landmarks[i * 3]
+            y1 = landmarks[i * 3 + 1]
+
+            x2 = landmarks[j * 3]
+            y2 = landmarks[j * 3 + 1]
+
+            return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+
+        pairs = [
+            (4, 8),
+            (8, 12),
+            (12, 16),
+            (16, 20)
+        ]
+
+        for i, j in pairs:
+            features.append(distance(i, j))
+
+        return features
 
     # PREPROCESSING
     # ==================================================
@@ -75,12 +102,13 @@ class FeatureExtractor:
         landmarks = self.padding_landmarks(landmarks)
 
         if landmarks is None:
-
             return None
 
         landmarks = self.normalize_landmarks(landmarks)
 
         landmarks = self.scale_landmarks(landmarks)
+
+        landmarks = self.add_distance_features(landmarks)
 
         return landmarks
 

@@ -1,9 +1,9 @@
 import time
-
+from config import GESTURE_HOLD_TIME
 
 class GestureStabilizer:
 
-    def __init__(self, hold_time=1.0):
+    def __init__(self, hold_time=GESTURE_HOLD_TIME):
 
         self.hold_time = hold_time
 
@@ -37,3 +37,5 @@ class GestureStabilizer:
                 return prediction
 
         return None
+    
+    

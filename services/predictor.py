@@ -7,8 +7,6 @@ from config import MODEL_PATH, CONFIDENCE_THRESHOLD
 from services.hand_detector import HandDetector
 from services.feature_extractor import FeatureExtractor
 
-
-
 class Predictor:
 
     def __init__(self):
@@ -19,9 +17,6 @@ class Predictor:
 
         self.model = self.load_model()
 
-    # ==========================================
-    # LOAD MODEL
-    # ==========================================
     def load_model(self):
 
         if not os.path.exists(MODEL_PATH):
