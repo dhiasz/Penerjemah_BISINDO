@@ -42,22 +42,6 @@ class DatasetWindow(ctk.CTkToplevel):
             self.on_close
         )
 
-        # ==================================
-        # COUNTDOWN
-        # ==================================
-        self.countdown_label = ctk.CTkLabel(
-            self.camera_frame,
-            text="",
-            font=("Arial", 48, "bold"),
-            text_color="red"
-        )
-
-        self.countdown_label.place(
-            relx=0.5,
-            rely=0.5,
-            anchor="center"
-        )
-
     # ==================================
     # WINDOW
     # ==================================

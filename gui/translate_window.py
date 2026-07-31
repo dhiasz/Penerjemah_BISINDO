@@ -70,7 +70,10 @@ class TranslateWindow(ctk.CTkToplevel):
     # =====================================
 
     def setup_ui(self):
-        # judul
+
+        # =====================================
+        # JUDUL
+        # =====================================
         self.title_label = ctk.CTkLabel(
             self,
             text="TERJEMAHAN BAHASA ISYARAT",
@@ -78,25 +81,78 @@ class TranslateWindow(ctk.CTkToplevel):
         )
 
         self.title_label.pack(
-            pady=(15,20)
+            pady=(15, 20)
         )
 
-        # preview camera
-        self.camera_frame = ctk.CTkFrame(
+        # =====================================
+        # CONTAINER
+        # =====================================
+        self.top_frame = ctk.CTkFrame(
             self,
+            fg_color="transparent"
+        )
+
+        self.top_frame.pack(
+            fill="x",
+            padx=20,
+            pady=(0,20)
+        )
+
+        # 3 kolom
+        self.top_frame.grid_columnconfigure(0, weight=1)   
+        self.top_frame.grid_columnconfigure(1, weight=0)   
+        self.top_frame.grid_columnconfigure(2, weight=1)   
+
+        # ==================================================
+        # BISINDO
+        # ==================================================
+        self.bisindo_frame = ctk.CTkFrame(
+            self.top_frame,
+            width=260,
+            height=260,
+            fg_color="transparent"
+        )
+
+        self.bisindo_frame.grid(
+            row=0,
+            column=0,
+            sticky="e",
+            padx=(0,30)
+        )
+
+        self.bisindo_frame.grid_propagate(False)
+
+        bisindo_image = Image.open("assets/images/bisindo.png")
+        bisindo_image = bisindo_image.resize((260,260))
+
+        self.bisindo_photo = ImageTk.PhotoImage(bisindo_image)
+
+        self.bisindo_label = ctk.CTkLabel(
+            self.bisindo_frame,
+            image=self.bisindo_photo,
+            text=""
+        )
+
+        self.bisindo_label.pack(expand=True)
+
+        # ==================================================
+        # CAMERA
+        # ==================================================
+        self.camera_frame = ctk.CTkFrame(
+            self.top_frame,
             width=500,
             height=260,
             fg_color="#F0A000",
             corner_radius=0
         )
 
-        self.camera_frame.pack(
-            padx=20,
-            pady=(0,20)
+        self.camera_frame.grid(
+            row=0,
+            column=1
         )
-        self.camera_frame.pack_propagate(False)
 
-        # Label Camera
+        self.camera_frame.grid_propagate(False)
+
         self.camera_label = ctk.CTkLabel(
             self.camera_frame,
             text="Preview Kamera",
@@ -104,9 +160,25 @@ class TranslateWindow(ctk.CTkToplevel):
             text_color="white"
         )
 
-        self.camera_label.pack(
-            expand=True
+        self.camera_label.pack(expand=True)
+
+        # ==================================================
+        # SPACER KANAN
+        # ==================================================
+        self.right_space = ctk.CTkFrame(
+            self.top_frame,
+            width=250,
+            height=260,
+            fg_color="transparent"
         )
+
+        self.right_space.grid(
+            row=0,
+            column=2,
+            sticky="w"
+        )
+
+        self.right_space.grid_propagate(False)
 
         # Bagian huruf saat ini
         # =========================================

@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from PIL import Image
 
 from gui.dataset_window import DatasetWindow
 from gui.train_window import TrainWindow
@@ -30,21 +31,38 @@ class MainWindow:
         # =================================================
         self.header_frame = ctk.CTkFrame(
             self.root,
-            height=60,
+            height=70,
             corner_radius=0,
             fg_color="#D9D9D9"
         )
-
         self.header_frame.pack(fill="x")
 
+        # Konfigurasi grid
+        self.header_frame.grid_columnconfigure(0, weight=0)  # Logo
+        self.header_frame.grid_columnconfigure(1, weight=1)  # Judul
+
+        # Logo
+        self.logo_image = ctk.CTkImage(
+            light_image=Image.open("assets/images/logo.png"),
+            dark_image=Image.open("assets/images/logo.png"),
+            size=(75, 75)
+        )
+
+        self.logo_label = ctk.CTkLabel(
+            self.header_frame,
+            image=self.logo_image,
+            text=""
+        )
+        self.logo_label.grid(row=0, column=0, padx=15, pady=10, sticky="w")
+
+        # Judul
         self.title_label = ctk.CTkLabel(
             self.header_frame,
             text="PENERJEMAH BAHASA ISYARAT BISINDO",
             font=("Arial", 28, "bold"),
             text_color="black"
         )
-
-        self.title_label.pack(pady=10)
+        self.title_label.grid(row=0, column=1, pady=10)
 
         # =================================================
         # BODY
@@ -75,8 +93,6 @@ class MainWindow:
             sticky="ns"
         )
 
-
-
         # Dashboard
         self.dashboard_label = ctk.CTkLabel(
             self.sidebar_frame,
@@ -86,7 +102,6 @@ class MainWindow:
         )
 
         self.dashboard_label.pack(pady=15)
-
 
         # Tombol Dataset
         self.btn_dataset = ctk.CTkButton(
