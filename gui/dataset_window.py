@@ -236,10 +236,43 @@ class DatasetWindow(ctk.CTkToplevel):
         )
 
         # ==================================
-        # BUTTON
+        # STATUS & BUTTON
         # ==================================
-        self.capture_button = ctk.CTkButton(
+        self.status_frame = ctk.CTkFrame(
             self,
+            fg_color="transparent"
+        )
+
+        self.status_frame.pack(
+            anchor="w",
+            padx=20,
+            pady=(0, 20)
+        )
+
+        # Countdown
+        self.countdown_label = ctk.CTkLabel(
+            self.status_frame,
+            text="",
+            font=("Arial", 18, "bold")
+        )
+
+        # Berhasil
+        self.success_label = ctk.CTkLabel(
+            self.status_frame,
+            text="",
+            font=("Arial", 15)
+        )
+
+        # Gagal
+        self.failed_label = ctk.CTkLabel(
+            self.status_frame,
+            text="",
+            font=("Arial", 15)
+        )
+
+        # Tombol Simpan Gesture
+        self.capture_button = ctk.CTkButton(
+            self.status_frame,
             text="Simpan Gesture",
             width=180,
             height=40,
@@ -247,9 +280,7 @@ class DatasetWindow(ctk.CTkToplevel):
         )
 
         self.capture_button.pack(
-            anchor="w",
-            padx=20,
-            pady=(0, 20)
+            anchor="w"
         )
 
     # ==================================
@@ -258,9 +289,7 @@ class DatasetWindow(ctk.CTkToplevel):
     def start_capture(self):
 
         label = self.label_entry.get().strip()
-
         total = self.total_entry.get().strip()
-
         countdown = self.countdown_entry.get().strip()
 
         # ==========================
@@ -286,12 +315,36 @@ class DatasetWindow(ctk.CTkToplevel):
 
             return
 
-        # Disable tombol
-        self.capture_button.configure(
-            state="disabled"
+        # ==================================
+        # TAMPILKAN STATUS
+        # ==================================
+
+        # Sembunyikan tombol
+        self.capture_button.pack_forget()
+
+        # Tampilkan informasi status
+        self.countdown_label.pack(anchor="w")
+        self.success_label.pack(anchor="w")
+        self.failed_label.pack(anchor="w")
+
+        # Nilai awal
+        self.countdown_label.configure(
+            text=f"Countdown : {countdown}"
         )
 
-        # Jalankan thread
+        self.success_label.configure(
+            text="Berhasil : 0"
+        )
+
+        self.failed_label.configure(
+            text="Gagal : 0"
+        )
+
+        self.update()
+
+        # ==================================
+        # THREAD
+        # ==================================
         thread = threading.Thread(
 
             target=self.capture_process,
@@ -318,13 +371,50 @@ class DatasetWindow(ctk.CTkToplevel):
 
             label,
             total,
-            countdown
+            countdown,
+
+            callback=self.update_status
 
         )
 
         self.after(
             0,
             lambda: self.capture_finished(result)
+        )
+
+    def update_status(
+        self,
+        countdown,
+        success,
+        failed
+    ):
+
+        self.after(
+            0,
+            lambda: self.show_status(
+                countdown,
+                success,
+                failed
+            )
+        )
+
+    def show_status(
+        self,
+        countdown,
+        success,
+        failed
+    ):
+
+        self.countdown_label.configure(
+            text=f"Countdown : {countdown}"
+        )
+
+        self.success_label.configure(
+            text=f"Berhasil : {success}"
+        )
+
+        self.failed_label.configure(
+            text=f"Gagal : {failed}"
         )
     
     def set_countdown(self, text):
@@ -335,14 +425,18 @@ class DatasetWindow(ctk.CTkToplevel):
 
     def capture_finished(self, result):
 
-        self.capture_button.configure(
-            state="normal"
+        # Sembunyikan status
+        self.countdown_label.pack_forget()
+        self.success_label.pack_forget()
+        self.failed_label.pack_forget()
+
+        # Tampilkan kembali tombol
+        self.capture_button.pack(
+            anchor="w"
         )
 
         messagebox.showinfo(
-
             "Informasi",
-
             f"""
     Capture selesai
 
@@ -351,6 +445,7 @@ class DatasetWindow(ctk.CTkToplevel):
     Total    : {result['total']}
     """
         )
+
 
     def stop_capture(self):
 

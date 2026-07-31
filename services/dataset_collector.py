@@ -118,60 +118,121 @@ class DatasetCollector:
         self,
         label,
         total_image,
-        countdown
+        countdown,
+        callback=None
     ):
 
         self.is_capturing = True
+
         success = 0
         failed = 0
+
         folder = self.create_folder(label)
+
         start_index = self.get_next_index(
             folder,
             label
         )
 
         while success < total_image and self.is_capturing:
-            # COUNTDOWN
 
-            for _ in range(countdown):
+            # ==========================
+            # COUNTDOWN
+            # ==========================
+
+            for second in range(countdown, 0, -1):
+
                 if not self.is_capturing:
                     break
+
+                if callback:
+                    callback(
+                        second,
+                        success,
+                        failed
+                    )
+
                 time.sleep(1)
+
             if not self.is_capturing:
                 break
 
-            # AMBIL FRAME YANG BARU
+            # ==========================
+            # AMBIL FRAME
+            # ==========================
+
             frame = self.camera.get_frame()
+
             if frame is None:
+
                 failed += 1
+
+                if callback:
+                    callback(
+                        0,
+                        success,
+                        failed
+                    )
+
                 continue
 
-            # DETEKSI TANGAN
+            # ==========================
+            # DETEKSI
+            # ==========================
+
             result = self.detector.detect(frame)
+
             if result is None or not result.multi_hand_landmarks:
+
                 failed += 1
+
+                if callback:
+                    callback(
+                        0,
+                        success,
+                        failed
+                    )
+
                 continue
 
-            # SIMPAN GAMBAR
+            # ==========================
+            # SIMPAN
+            # ==========================
 
             saved = self.save_image(
+
                 frame,
                 folder,
                 label,
                 start_index + success
+
             )
 
             if saved:
+
                 success += 1
+
             else:
+
                 failed += 1
 
+            if callback:
+
+                callback(
+                    0,
+                    success,
+                    failed
+                )
+
         self.is_capturing = False
+
         return {
+
             "success": success,
             "failed": failed,
             "total": total_image,
             "status": "Capture selesai"
+
         }
     
     def stop_capture(self):
